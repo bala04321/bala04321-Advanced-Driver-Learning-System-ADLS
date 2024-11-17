@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .driver-info h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .driver-info p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                        0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08),
+                        0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #334155;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: #1e293b;
+        }
+
+        .recommendation {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            transition: transform 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .recommendation:hover {
+            transform: translateX(8px);
+        }
+
+        .recommendation.high {
+            background-color: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .recommendation.medium {
+            background-color: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+
+        .recommendation.low {
+            background-color: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .achievements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .achievement-badge {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .achievement-badge:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 6px rgba(139, 92, 246, 0.3);
+        }
+
+        .driving-style {
+            margin-top: 16px;
+        }
+
+        .driving-style-item {
+            margin-bottom: 20px;
+        }
+
+        .driving-style-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .icon {
+            color: #6366f1;
+            stroke-width: 2.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .badge {
+                align-self: flex-start;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Subtle animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .metrics-grid .card:nth-child(1) { animation-delay: 0.1s; }
+        .metrics-grid .card:nth-child(2) { animation-delay: 0.2s; }
+        .metrics-grid .card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Glass morphism effect for cards */
+        .card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="driver-info">
+                <h1>Alex Thompson</h1>
+                <p>Driver ID: DRV-2024-001</p>
+            </div>
+            <span class="badge">Commuter</span>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Safety Score
+                        <i data-feather="shield" class="icon"></i>
+                    </div>
+                </div>
+                <div class="metric-value">87%</div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 87%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Efficiency Rating
+                        <i data-feather="battery-charging" class="icon"></i>
+                    </div>
+                </div>
+                <div class="metric-value">92%</div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 92%"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Recent Trips
+                        <i data-feather="navigation" class="icon"></i>
+                    </div>
+                </div>
+                <div class="metric-value">156</div>
+                <p style="font-size: 0.875rem; color: #64748b;">Last 30 days</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i data-feather="trending-up" class="icon"></i>
+                    Driving Style Analysis
+                </div>
+            </div>
+            <div class="driving-style" id="drivingStyle">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i data-feather="alert-triangle" class="icon"></i>
+                    Personal Recommendations
+                </div>
+            </div>
+            <div id="recommendations">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i data-feather="award" class="icon"></i>
+                    Recent Achievements
+                </div>
+            </div>
+            <div class="achievements" id="achievements">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather icons after page load
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+            
+            // Animate progress bars on load
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+        });
+
+        // Driver data
+        const driverData = {
+            drivingStyle: {
+                acceleration: 85,
+                braking: 78,
+                cornering: 90,
+                speedControl: 88
+            },
+            recommendations: [
+                {
+                    type: "safety",
+                    message: "Brake more gradually when approaching stop signs",
+                    priority: "high"
+                },
+                {
+                    type: "efficiency",
+                    message: "Reduce idle time to improve fuel efficiency",
+                    priority: "medium"
+                },
+                {
+                    type: "maintenance",
+                    message: "Tire pressure check recommended",
+                    priority: "low"
+                }
+            ],
+            achievements: [
+                "Eco-Driver Level 3",
+                "Safe Driver Badge",
+                "100 Trips Milestone"
+            ]
+        };
+
+        // Populate driving style
+        const drivingStyleContainer = document.getElementById('drivingStyle');
+        Object.entries(driverData.drivingStyle).forEach(([key, value]) => {
+            const item = document.createElement('div');
+            item.className = 'driving-style-item';
+            item.innerHTML = `
+                <div class="driving-style-header">
+                    <span style="text-transform: capitalize">${key}</span>
+                    <span>${value}%</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${value}%"></div>
+                </div>
+            `;
+            drivingStyleContainer.appendChild(item);
+        });
+
+        // Populate recommendations
+        const recommendationsContainer = document.getElementById('recommendations');
+        driverData.recommendations.forEach(rec => {
+            const div = document.createElement('div');
+            div.className = `recommendation ${rec.priority}`;
+            div.innerHTML = `
+                <div style="font-weight: 600; text-transform: capitalize; margin-bottom: 4px">${rec.type}</div>
+                <div style="font-size: 0.95rem">${rec.message}</div>
+            `;
+            recommendationsContainer.appendChild(div);
+        });
+
+        // Populate achievements
+        const achievementsContainer = document.getElementById('achievements');
+        driverData.achievements.forEach(achievement => {
+            const badge = document.createElement('span');
+            badge.className = 'achievement-badge';
+            badge.textContent = achievement;
+            achievementsContainer.appendChild(badge);
+        });
+    </script>
+</body>
+</html>
